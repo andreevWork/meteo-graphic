@@ -27,25 +27,26 @@ export class BaseModel {
   }
 
   getAllData() {
-    return this.db.getAll(this.storeName)
-      .then(data => {
-        if (!data.length) {
-          return this.loadData()
-            .then(data => {
-              this.db.addArray(this.storeName, data);
+    return this.db.getData(this.storeName)
+      .then(data => data && data.length > 0 ?
+        data
+        :
+        this.loadData()
+          .then(data => this.db.addArray(this.storeName, data))
+          .then(() => this.db.getData(this.storeName))
+      );
+  }
 
-              return data;
-            });
-        }
-
-        return data;
-      });
+  getFilteredData(filters) {
+    return this.db.getData(this.storeName, filters);
   }
 
   loadData() {
     return fetch(this.dataUrl)
       .then(res => res.json())
       .then(data => {
+        // console.time('parseData');
+
         const yearsDict = {};
 
         for (let item of data) {
@@ -54,11 +55,15 @@ export class BaseModel {
           yearsDict[year].push(item.v);
         }
 
-        return Object.keys(yearsDict)
+        const result = Object.keys(yearsDict)
           .map(year => ({
-            year: +year,
+            year: year,
             values: yearsDict[year]
           }));
+
+        // console.timeEnd('parseData');
+
+        return result;
       });
   }
 }

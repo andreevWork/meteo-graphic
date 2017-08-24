@@ -26,6 +26,10 @@ export class Graphic {
     this.context.closePath();
   }
 
+  clear() {
+    this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+  }
+
   renderGraphic(data, min, max) {
     const graphicWidth = this.canvasWidth - this.x0 * 2;
     const graphicHeight = this.canvasHeight - this.y0 * 2;

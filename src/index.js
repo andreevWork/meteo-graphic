@@ -1,16 +1,16 @@
 import {DB} from "./db/index";
-import {TemperatureModel} from "./models/temperature/temperature.model";
-import {GraphicController} from "./controllers/graphic/index";
+import {GraphicPage} from "./pages/graphic.page";
+import {TemperatureModel} from "./models/temperature";
+import {PrecipitationModel} from "./models/precipitation";
 
 const db = new DB();
 const temperatureModel = new TemperatureModel(db);
+const precipitationModel = new PrecipitationModel(db);
 
 db.connect()
   .then(() => {
-    temperatureModel.getAllData()
-      .then(data => {
-
-        new GraphicController(data);
-      });
-  })
-  .catch(err => console.log(err));
+    new GraphicPage({
+      temperature: temperatureModel,
+      precipitation: precipitationModel
+    });
+  });

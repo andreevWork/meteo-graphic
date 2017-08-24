@@ -1,5 +1,7 @@
 export class Select {
 
+  handles = [];
+
   constructor(id) {
     this.select = document.getElementById(id);
   }
@@ -20,8 +22,18 @@ export class Select {
   }
 
   onChange(cb) {
-    this.select.addEventListener('change', () => {
+    const handle = () => {
       cb(this.getValue());
-    });
+    };
+    this.select.addEventListener('change', handle);
+    this.handles.push(handle);
+  }
+
+  clearHandles() {
+    this.handles
+      .forEach(handle => {
+        this.select.removeEventListener('change', handle);
+      });
+    this.handles.length = 0;
   }
 }
